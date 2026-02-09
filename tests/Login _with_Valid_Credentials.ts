@@ -1,9 +1,16 @@
-import { test } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
+import { test, expect } from '@playwright/test';
 
-test('TC-LOGIN-01: Login with valid credentials', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
-  await loginPage.login('validuser@example.com', 'ValidPassword123');
-  await loginPage.expectDashboard();
+test('TC-01: Valid Login', async ({ page }) => {
+
+  await page.goto('http://localhost:5004/');
+
+  const username = page.locator('input[placeholder="Enter username"]');
+  const password = page.locator('input[placeholder="Enter password"]');
+  const signInBtn = page.locator('button:has-text("Sign In")');
+
+  await username.fill('admin');
+  await password.fill('0000');
+  await signInBtn.click();
+
+  await expect(page).toHaveURL(/dashboard|home/);
 });
