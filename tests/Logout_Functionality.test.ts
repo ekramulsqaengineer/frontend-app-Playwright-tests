@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { test, expect } from '@playwright/test';
 
 /**
@@ -14,15 +13,15 @@ import { test, expect } from '@playwright/test';
 test('TC-01: Valid Login and Logout for Nifty AI', async ({ page }) => {
 
   // ১. হোমপেজে রিডাইরেক্ট করা
-  const homeUrl: string = 'http://localhost:5004/signin';
+  const homeUrl: string = 'http://localhost:5004/';
   await page.goto(homeUrl, { timeout: 60000 });
 
-  // ২. উপরের ডানদিকের লাল মার্ক করা 'Sign In' বাটনে ক্লিক করা
+  // ২. উপরের ডানদিকের 'Sign In' বাটনে ক্লিক করা
   const topSignInButton = page.locator('a[href="/signin"]:has-text("Sign In")');
   await expect(topSignInButton).toBeVisible({ timeout: 15000 });
   await topSignInButton.click();
 
-  // ৩. "Sign in with Zoom" বাটনে ক্লিক করা (আপনার স্প্যান সিলেক্টর অনুযায়ী)
+  // ৩. "Sign in with Zoom" বাটনে ক্লিক করা
   const zoomSignInButton = page.locator('span:has-text("Sign in with Zoom")').first();
   await expect(zoomSignInButton).toBeVisible({ timeout: 15000 });
   
@@ -47,8 +46,9 @@ test('TC-01: Valid Login and Logout for Nifty AI', async ({ page }) => {
   await expect(page).toHaveURL(/dashboard|home|meeting/);
   
   // ৭. সাইন আউট (Sign Out) বাটনে ক্লিক করা (আপনার স্ক্রিনশট অনুযায়ী লাল মার্ক করা বাটন)
+  // ড্যাশবোর্ড লোড হওয়ার জন্য একটু সময় দেওয়া এবং বাটনটি নিশ্চিত করা
   const signOutButton = page.getByRole('button', { name: /sign out/i }).first() 
-                        || page.locator('text=Sign Out').first();
+                        || page.locator('button:has-text("Sign Out")').first();
   
   await expect(signOutButton).toBeVisible({ timeout: 15000 });
   await signOutButton.click();
@@ -56,6 +56,3 @@ test('TC-01: Valid Login and Logout for Nifty AI', async ({ page }) => {
   // ৮. কনফার্মেশন: সাইন আউট হওয়ার পর আবার সাইন ইন বা হোম পেজে ফিরেছে কি না
   await expect(page).toHaveURL(/signin|home|localhost:5004/);
 });
-=======
-
->>>>>>> 28951b3bda9b96af5e89c2d73495c1080e17175d
