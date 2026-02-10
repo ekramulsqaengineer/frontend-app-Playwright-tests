@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { test, expect } from '@playwright/test';
 
 /**
@@ -55,3 +56,6 @@ test('TC-01: Valid Login and Logout for Nifty AI', async ({ page }) => {
   // ৮. কনফার্মেশন: সাইন আউট হওয়ার পর আবার সাইন ইন বা হোম পেজে ফিরেছে কি না
   await expect(page).toHaveURL(/signin|home|localhost:5004/);
 });
+=======
+
+>>>>>>> 28951b3bda9b96af5e89c2d73495c1080e17175d

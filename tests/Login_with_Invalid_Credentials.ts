@@ -17,7 +17,7 @@ test('TC-01: Valid Login for Nifty AI', async ({ page }) => {
 
   
   // ৪. নেভিগেশনের পর লগইন ফর্মে ডাটা দেওয়া
-  const usernameValue: string = 'admin';
+  const usernameValue: string = 'admin1';
   const passwordValue: string = '0001';
 
   // ইউজারনেম ফিল্ডের জন্য অপেক্ষা করা (signin পেজ লোড হতে সময় নিতে পারে)
