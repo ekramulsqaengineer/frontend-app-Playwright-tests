@@ -1,57 +1,52 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Test Case: Nifty AI Login Flow via Home Page
- * Steps: 
- * 1. Navigate to Home Page (http://localhost:5004/)
- * 2. Click the 'Sign In' button using exact href and span content
- * 3. Click 'Sign in with Zoom' with explicit waiting
- * 4. Fill Credentials and Submit
+ * Test Case: Logout Functionality for Nifty AI
+ * Steps:
+ * 1. Perform Login first (Session maintain korar jonno)
+ * 2. Locate and Click the Logout/Profile button
+ * 3. Verify that the user is redirected back to the Login page
  */
 
-test('TC-01: Valid Login for Nifty AI', async ({ page }) => {
+test.describe('Nifty AI Logout Flow', () => {
 
-  // ১. হোমপেজে রিডাইরেক্ট করা
-  const homeUrl: string = 'http://localhost:5004/signin';
-  await page.goto(homeUrl, { timeout: 60000 });
+  // Protiti logout test-er age login thaka proyojon
+  test.beforeEach(async ({ page }) => {
+    // Timeout barano hoyeche jate slow network-e kaj kore
+    await page.goto('http://localhost:5004/signin', { waitUntil: 'networkidle', timeout: 60000 });
+    
+    // Login steps
+    await page.fill('input[placeholder*="username"]', 'admin');
+    await page.fill('input[placeholder*="password"]', '0000');
+    await page.click('button[type="submit"]');
+    
+    // Dashboard load howar porjonto wait kora
+    // 'networkidle' use kora hoyeche jate shob data load hoye jay
+    await page.waitForURL(/dashboard|home|meeting/, { timeout: 30000 });
+  });
 
-  
-  // ৪. নেভিগেশনের পর লগইন ফর্মে ডাটা দেওয়া
-  const usernameValue: string = 'admin';
-  const passwordValue: string = '0000';
+  test('TC-02: Should logout successfully from dashboard', async ({ page }) => {
+    
+    // ১. প্রোফাইল মেনু বা আইকনে ক্লিক করা (Logout বাটন সাধারণত ড্রপডাউনে থাকে)
+    // Image-e dekhha jachhe timeout ekhane hochhe, tai selector aro specific kora holo
+    const profileMenu = page.locator('button[aria-haspopup="menu"], .profile-icon, img[alt*="avatar"], .user-profile').first();
+    
+    // Profile menu visible howar jonno wait kora
+    await expect(profileMenu).toBeVisible({ timeout: 15000 });
+    await profileMenu.click();
 
-  // ইউজারনেম ফিল্ডের জন্য অপেক্ষা করা (signin পেজ লোড হতে সময় নিতে পারে)
-  await page.waitForSelector('input[placeholder*="username"]', { timeout: 30000 });
+    // ২. Logout বাটন খুঁজে বের করা এবং ক্লিক করা
+    // Menu open howar por Logout lekha bhashbe
+    const logoutButton = page.locator('text=/logout/i').first();
+    await expect(logoutButton).toBeVisible({ timeout: 10000 });
+    await logoutButton.click();
 
-  // ডাটা ইনপুট দেওয়া
-  await page.fill('input[placeholder*="username"]', usernameValue);
-  await page.fill('input[placeholder*="password"]', passwordValue);
+    // ৩. ভেরিফিকেশন: ইউজার কি সাইন-ইন পেজে ফিরে গেছে?
+    await expect(page).toHaveURL(/signin/, { timeout: 15000 });
 
-  // ৫. সাবমিট বাটনে ক্লিক করা
-  // যদি একাধিক বাটন থাকে তবে টাইপ 'submit' টার্গেট করা নিরাপদ
-  await page.click('button[type="submit"], form button', { timeout: 10000 });
+    // ৪. কনফার্ম করা যে সাইন ইন পেজের এলিমেন্ট দেখা যাচ্ছে
+    const signInHeader = page.locator('text=/sign in/i').first();
+    await expect(signInHeader).toBeVisible();
+  });
 
-  // ৬. ভেরিফিকেশন
-  // ২ সেকেন্ড অপেক্ষা করে দেখা ইউআরএল আপডেট হয়েছে কি না
-  await page.waitForTimeout(2000);
-  await expect(page).toHaveURL(/dashboard|home|meeting|signin/);
-
-  // ড্যাশবোর্ড লোড হয়েছে কি না তা নিশ্চিত করা
-  const welcomeText = page.locator('text=/welcome/i').first();
-  if (await welcomeText.isVisible()) {
-      await expect(welcomeText).toBeVisible();
-  }
-
-    // ৬. ড্যাশবোর্ড ভেরিফিকেশন (ইউআরএল চেক)
-  await expect(page).toHaveURL(/dashboard|home|meeting/);
-  
-  // ৭. সাইন আউট (Sign Out) বাটনে ক্লিক করা (আপনার স্ক্রিনশট অনুযায়ী লাল মার্ক করা বাটন)
-  const signOutButton = page.getByRole('button', { name: /sign out/i }).first() 
-                        || page.locator('text=Sign Out').first();
-  
-  await expect(signOutButton).toBeVisible({ timeout: 15000 });
-  await signOutButton.click();
-
-  // ৮. কনফার্মেশন: সাইন আউট হওয়ার পর আবার সাইন ইন বা হোম পেজে ফিরেছে কি না
-  await expect(page).toHaveURL(/signin|home|localhost:5004/);
 });

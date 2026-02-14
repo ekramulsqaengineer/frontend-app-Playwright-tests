@@ -41,17 +41,4 @@ test('TC-01: Valid Login for Nifty AI', async ({ page }) => {
   if (await welcomeText.isVisible()) {
       await expect(welcomeText).toBeVisible();
   }
-
-    // ৬. ড্যাশবোর্ড ভেরিফিকেশন (ইউআরএল চেক)
-  await expect(page).toHaveURL(/dashboard|home|meeting/);
-  
-  // ৭. সাইন আউট (Sign Out) বাটনে ক্লিক করা (আপনার স্ক্রিনশট অনুযায়ী লাল মার্ক করা বাটন)
-  const signOutButton = page.getByRole('button', { name: /sign out/i }).first() 
-                        || page.locator('text=Sign Out').first();
-  
-  await expect(signOutButton).toBeVisible({ timeout: 15000 });
-  await signOutButton.click();
-
-  // ৮. কনফার্মেশন: সাইন আউট হওয়ার পর আবার সাইন ইন বা হোম পেজে ফিরেছে কি না
-  await expect(page).toHaveURL(/signin|home|localhost:5004/);
 });

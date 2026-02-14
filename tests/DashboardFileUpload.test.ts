@@ -1,57 +1,66 @@
 import { test, expect } from '@playwright/test';
+import path from 'path';
+import fs from 'fs';
 
 /**
- * Test Case: Nifty AI Login Flow via Home Page
- * Steps: 
- * 1. Navigate to Home Page (http://localhost:5004/)
- * 2. Click the 'Sign In' button using exact href and span content
- * 3. Click 'Sign in with Zoom' with explicit waiting
- * 4. Fill Credentials and Submit
+ * Test Case: Nifty AI Login and Transcript File Upload
+ * Steps:
+ * 1. Login with Valid Credentials
+ * 2. Click on 'Upload Transcript File' card
+ * 3. Select file from local directory
+ * 4. Verify file upload success
  */
 
-test('TC-01: Valid Login for Nifty AI', async ({ page }) => {
+test('TC-01: Valid Login and File Upload for Nifty AI', async ({ page }) => {
 
-  // ১. হোমপেজে রিডাইরেক্ট করা
-  const homeUrl: string = 'http://localhost:5004/signin';
-  await page.goto(homeUrl, { timeout: 60000 });
+  // ১. লগইন প্রক্রিয়া (Login Flow)
+  const loginUrl: string = 'http://localhost:5004/signin';
+  await page.goto(loginUrl, { waitUntil: 'networkidle', timeout: 60000 });
 
+  await page.fill('input[placeholder*="username"]', 'admin');
+  await page.fill('input[placeholder*="password"]', '0000');
+  await page.click('button[type="submit"]');
+
+  // ড্যাশবোর্ড লোড হওয়া পর্যন্ত অপেক্ষা করা
+  await page.waitForURL(/dashboard|home|meeting/, { timeout: 30000 });
+
+  // ২. 'Upload Transcript File' কার্ডে ক্লিক করা (image_1efb83.png অনুযায়ী)
+  const uploadCard = page.locator('text=/Upload Transcript File/i').first();
+  await expect(uploadCard).toBeVisible({ timeout: 15000 });
+  await uploadCard.click();
+
+  // ৩. ফাইল আপলোড পপআপ চেক করা (image_1efba7.png অনুযায়ী)
+  const uploadModal = page.locator('text=/Drag and drop a transcript file here/i').first();
+  await expect(uploadModal).toBeVisible();
+
+  // ৪. ফাইল সিলেক্ট করা (Error Fixing)
+  // আপনার এরর (image_1f06c5.png) অনুযায়ী ফাইলটি খুঁজে পাচ্ছে না।
+  // আমরা এখন সরাসরি প্রজেক্টের রুট ডিরেক্টরি থেকে চেক করছি।
   
-  // ৪. নেভিগেশনের পর লগইন ফর্মে ডাটা দেওয়া
-  const usernameValue: string = 'admin';
-  const passwordValue: string = '0000';
+  const fileName = 'deepseek_text_20251025_d38b67.txt';
+  
+  // আপনি চাইলে ফাইলটি সরাসরি 'tests' ফোল্ডারের ভেতরে রেখে এই পাথটি ব্যবহার করতে পারেন:
+  const filePath = path.join(process.cwd(), 'tests', fileName);
 
-  // ইউজারনেম ফিল্ডের জন্য অপেক্ষা করা (signin পেজ লোড হতে সময় নিতে পারে)
-  await page.waitForSelector('input[placeholder*="username"]', { timeout: 30000 });
-
-  // ডাটা ইনপুট দেওয়া
-  await page.fill('input[placeholder*="username"]', usernameValue);
-  await page.fill('input[placeholder*="password"]', passwordValue);
-
-  // ৫. সাবমিট বাটনে ক্লিক করা
-  // যদি একাধিক বাটন থাকে তবে টাইপ 'submit' টার্গেট করা নিরাপদ
-  await page.click('button[type="submit"], form button', { timeout: 10000 });
-
-  // ৬. ভেরিফিকেশন
-  // ২ সেকেন্ড অপেক্ষা করে দেখা ইউআরএল আপডেট হয়েছে কি না
-  await page.waitForTimeout(2000);
-  await expect(page).toHaveURL(/dashboard|home|meeting|signin/);
-
-  // ড্যাশবোর্ড লোড হয়েছে কি না তা নিশ্চিত করা
-  const welcomeText = page.locator('text=/welcome/i').first();
-  if (await welcomeText.isVisible()) {
-      await expect(welcomeText).toBeVisible();
+  // ফাইলটি পিসিতে আছে কি না তা আগে চেক করা (Debug purposes)
+  if (!fs.existsSync(filePath)) {
+    console.error(`Error: File not found at ${filePath}. Please ensure the file is placed inside the 'tests' folder.`);
+    // যদি ফাইল না থাকে, তবে আমরা একটি টেম্পোরারি ফাইল তৈরি করে দিচ্ছি টেস্টটি চালানোর জন্য
+    fs.writeFileSync(filePath, 'This is a sample transcript content for testing.');
   }
-
-    // ৬. ড্যাশবোর্ড ভেরিফিকেশন (ইউআরএল চেক)
-  await expect(page).toHaveURL(/dashboard|home|meeting/);
   
-  // ৭. সাইন আউট (Sign Out) বাটনে ক্লিক করা (আপনার স্ক্রিনশট অনুযায়ী লাল মার্ক করা বাটন)
-  const signOutButton = page.getByRole('button', { name: /sign out/i }).first() 
-                        || page.locator('text=Sign Out').first();
-  
-  await expect(signOutButton).toBeVisible({ timeout: 15000 });
-  await signOutButton.click();
+  // ফাইল ইনপুট হ্যান্ডেল করা
+  const fileInput = page.locator('input[type="file"]');
+  await fileInput.setInputFiles(filePath);
 
-  // ৮. কনফার্মেশন: সাইন আউট হওয়ার পর আবার সাইন ইন বা হোম পেজে ফিরেছে কি না
-  await expect(page).toHaveURL(/signin|home|localhost:5004/);
+  // ৫. আপলোড সাকসেস ভেরিফিকেশন (image_1efb83.png-এর নিচের তালিকার মতো)
+  // ফাইলটি আপলোড হওয়ার পর তালিকায় দেখা যাচ্ছে কি না তা চেক করা
+  const uploadedFileRow = page.locator('text=/deepseek_text/i').first();
+  await expect(uploadedFileRow).toBeVisible({ timeout: 30000 });
+
+  // 'Uploaded' স্ট্যাটাস চেক করা
+  const successLabel = page.locator('text=/Uploaded/i').first();
+  await expect(successLabel).toBeVisible();
+
+  console.log('Login and File Upload completed successfully!');
 });
