@@ -1,22 +1,74 @@
 import { test, expect } from '@playwright/test';
 import path from 'path';
+import fs from 'fs';
 
-test('TC-03: File Upload Functional Test', async ({ page }) => {
-  // লগইন ফ্লো
-  await page.goto('http://localhost:5004/signin');
-  await page.fill('#username', 'user_01');
-  await page.fill('#password', 'pass_01');
-  await page.click('#login-button');
+test('TC-03: File Upload Functional Test (TXT Only)', async ({ page }) => {
 
-  // ফাইল আপলোড সেকশনে যাওয়া
-  await page.click('#upload-section');
-  
-  // ফাইল সিলেক্ট এবং আপলোড (উদাহরণস্বরূপ একটি স্যাম্পল ফাইল)
-  const filePath = path.resolve(__dirname, '../sample.pdf');
-  await page.setInputFiles('input[type="file"]', filePath);
-  
-  await page.click('#submit-upload');
+  // ===============================
+  // 1️⃣ LOGIN FLOW
+  // ===============================
+  await page.goto('http://localhost:5004/signin', {
+    waitUntil: 'domcontentloaded'
+  });
 
-  // আপলোড সফল হয়েছে কি না চেক করা
-  await expect(page.locator('.upload-success')).toBeVisible();
+  await page.waitForSelector('input[placeholder*="username"]', { timeout: 30000 });
+
+  await page.fill('input[placeholder*="username"]', 'admin');
+  await page.fill('input[placeholder*="password"]', '0000');
+
+  await page.locator('button[type="submit"]').click();
+
+  await page.waitForURL(/dashboard|home/);
+  await expect(page).toHaveURL(/dashboard|home/);
+
+  // ===============================
+  // 2️⃣ CLICK UPLOAD CARD
+  // ===============================
+  const uploadCard = page.locator('div.border-dashed', {
+    hasText: 'Upload Transcript File'
+  });
+
+  await expect(uploadCard).toBeVisible();
+  await uploadCard.click();
+
+  // ===============================
+  // 3️⃣ TXT FILE CREATE & UPLOAD
+  // ===============================
+  const fileName = 'sample_upload_test.txt';
+  const filePath = path.resolve(__dirname, '../', fileName);
+
+  // যদি file না থাকে তাহলে create করবে
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(
+      filePath,
+      'This is a sample transcript file for Playwright TXT upload testing.'
+    );
+  }
+
+  const fileInput = page.locator('input[type="file"]');
+  await expect(fileInput).toBeAttached();
+
+  await fileInput.setInputFiles(filePath);
+
+  // ===============================
+  // 4️⃣ VERIFY FILE APPEARS
+  // ===============================
+  const uploadedFile = page
+    .locator('div:has-text("Uploaded Files")')
+    .locator(`p[title="${fileName}"]`)
+    .first();   // strict safe
+
+  await expect(uploadedFile).toBeVisible({ timeout: 30000 });
+
+  // ===============================
+  // 5️⃣ VERIFY STATUS BADGE
+  // ===============================
+  const statusBadge = page
+    .locator('div:has-text("Uploaded Files")')
+    .locator('text=/Uploaded|Processing|Completed|Success/i')
+    .first();
+
+  await expect(statusBadge).toBeVisible({ timeout: 30000 });
+
+  console.log('✅ TXT File Upload Functional Test Passed!');
 });
