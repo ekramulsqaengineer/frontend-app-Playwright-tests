@@ -15,6 +15,7 @@ git clone [https://github.com/ekramulsqaengineer/frontend-app-Playwright-tests.g
 ধাপ ৩: প্রজেক্ট ফোল্ডারে প্রবেশ এবং CMD ওপেন
 প্রজেক্টটি ক্লোন হওয়ার পর সেই ফোল্ডারের ভেতরে প্রবেশ করুন।
 ফোল্ডারের অ্যাড্রেস বারে cmd লিখে এন্টার (Enter) প্রেস করুন।
+
 ধাপ ৪: VS Code-এ প্রজেক্ট ওপেন করা
 টার্মিনাল বা CMD-তে নিচের কমান্ডটি দিয়ে সরাসরি ভিজ্যুয়াল স্টুডিও কোডে প্রজেক্টটি ওপেন করুন:
 code .
@@ -70,6 +71,7 @@ git clone [https://github.com/ekramulsqaengineer/frontend-app-Playwright-tests.g
 Step 3: Navigate to Project Folder and Open CMD
 After cloning the project, enter that specific folder.
 Type cmd in the folder's address bar and press Enter.
+
 Step 4: Open Project in VS Code
 In the Terminal or CMD, run the following command to open the project directly in Visual Studio Code:
 code .
