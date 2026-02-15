@@ -10,10 +10,10 @@ import { test, expect } from '@playwright/test';
  */
 
 test('TC-04: Task Generation and Navigation Logic Test', async ({ page }) => {
-  // ১. সাইন-ইন পেজে নেভিগেট করা
+  // 1. Navigate to the sign-in page
   await page.goto('http://localhost:5004/signin', { waitUntil: 'domcontentloaded' });
 
-  // ২. লগইন প্রসেস
+  // 2. Login process
   const usernameInput = page.locator('input[placeholder*="username"]');
   const passwordInput = page.locator('input[placeholder*="password"]');
   const loginButton = page.locator('button[type="submit"]');
@@ -22,10 +22,10 @@ test('TC-04: Task Generation and Navigation Logic Test', async ({ page }) => {
   await passwordInput.fill('0000');
   await loginButton.click();
 
-  // ৩. ড্যাশবোর্ড লোড হওয়া পর্যন্ত অপেক্ষা করা
+  // 3. Wait until the dashboard is loaded
   await expect(page).toHaveURL(/.*dashboard|home/, { timeout: 15000 });
 
-  // ৪. নতুন টাস্ক তৈরি করা (যদি ড্যাশবোর্ডে অপশন থাকে)
+  // 4. Create a new task (if the option exists on the dashboard)
   const newTaskBtn = page.locator('#new-task-btn');
   if (await newTaskBtn.isVisible()) {
     await newTaskBtn.click();
@@ -34,17 +34,17 @@ test('TC-04: Task Generation and Navigation Logic Test', async ({ page }) => {
     await page.locator('#save-task').click();
   }
 
-  // ৫. টাস্ক মেনুতে ক্লিক করা (আপনার স্ক্রিনশট অনুযায়ী ওপরের মেনু)
+  // 5. Click on the Tasks menu (top menu according to your screenshot)
   const tasksMenuLink = page.getByRole('link', { name: /Tasks/i });
   await expect(tasksMenuLink).toBeVisible();
   await tasksMenuLink.click();
 
-  // ৬. টাস্ক পেজে যাওয়ার পর কনফার্ম করা
+  // 6. Confirm that the Tasks page is loaded
   await expect(page).toHaveURL(/.*tasks/);
   await expect(page.locator('h1, h2')).toContainText('Tasks');
 
-  // ৭. টাস্ক কার্ড এক্সপ্যান্ড করা (আপনার স্ক্রিনশটের লাল মার্ক করা অ্যারো বাটন)
-  // এটি সাধারণত কার্ডের ডান পাশে থাকে
+  // 7. Expand the task card (red-marked arrow button in your screenshot)
+  // Usually located on the right side of the card
   const expandArrow = page.locator('button').filter({ hasText: '' }).last(); 
   await expect(expandArrow).toBeVisible({ timeout: 10000 });
   await expandArrow.click();

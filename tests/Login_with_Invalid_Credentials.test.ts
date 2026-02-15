@@ -11,32 +11,31 @@ import { test, expect } from '@playwright/test';
 
 test('TC-01: Valid Login for Nifty AI', async ({ page }) => {
 
-  // ১. হোমপেজে রিডাইরেক্ট করা
+  // 1. Redirect to the homepage
   const homeUrl: string = 'http://localhost:5004/signin';
   await page.goto(homeUrl, { timeout: 60000 });
 
-  
-  // ৪. নেভিগেশনের পর লগইন ফর্মে ডাটা দেওয়া
+  // 2. After navigation, fill in the login form
   const usernameValue: string = 'admin1';
   const passwordValue: string = '0001';
 
-  // ইউজারনেম ফিল্ডের জন্য অপেক্ষা করা (signin পেজ লোড হতে সময় নিতে পারে)
+  // Wait for the username field (signin page might take time to load)
   await page.waitForSelector('input[placeholder*="username"]', { timeout: 30000 });
 
-  // ডাটা ইনপুট দেওয়া
+  // Enter data into fields
   await page.fill('input[placeholder*="username"]', usernameValue);
   await page.fill('input[placeholder*="password"]', passwordValue);
 
-  // ৫. সাবমিট বাটনে ক্লিক করা
-  // যদি একাধিক বাটন থাকে তবে টাইপ 'submit' টার্গেট করা নিরাপদ
+  // 3. Click the submit button
+  // If there are multiple buttons, targeting type='submit' is safe
   await page.click('button[type="submit"], form button', { timeout: 10000 });
 
-  // ৬. ভেরিফিকেশন
-  // ২ সেকেন্ড অপেক্ষা করে দেখা ইউআরএল আপডেট হয়েছে কি না
+  // 4. Verification
+  // Wait 2 seconds to see if the URL has updated
   await page.waitForTimeout(2000);
   await expect(page).toHaveURL(/dashboard|home|meeting|signin/);
 
-  // ড্যাশবোর্ড লোড হয়েছে কি না তা নিশ্চিত করা
+  // Ensure the dashboard has loaded
   const welcomeText = page.locator('text=/welcome/i').first();
   if (await welcomeText.isVisible()) {
       await expect(welcomeText).toBeVisible();

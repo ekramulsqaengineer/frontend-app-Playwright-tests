@@ -11,14 +11,14 @@ import { test, expect, devices } from '@playwright/test';
  */
 
 test('TC-09: Mobile Responsive Menu and Scroll Test', async ({ page }) => {
-  // ১. সরাসরি ভিউপোর্ট সেট করার বদলে Playwright-এর বিল্ট-ইন ডিভাইস ইমুলেশন ব্যবহার করা
+  // 1. Instead of directly setting viewport, use Playwright's built-in device emulation
   const iPhone12 = devices['iPhone 12'];
   await page.setViewportSize(iPhone12.viewport);
 
-  // ২. সাইন-ইন পেজে নেভিগেট করা
+  // 2. Navigate to the sign-in page
   await page.goto('http://localhost:5004/signin', { waitUntil: 'domcontentloaded' });
 
-  // ৩. মোবাইল ভিউতে লগইন প্রসেস
+  // 3. Login process in mobile view
   const usernameInput = page.locator('input[placeholder*="username"]');
   const passwordInput = page.locator('input[placeholder*="password"]');
   const loginButton = page.locator('button[type="submit"]');
@@ -27,7 +27,7 @@ test('TC-09: Mobile Responsive Menu and Scroll Test', async ({ page }) => {
   await passwordInput.fill('0000');
   await loginButton.click();
 
-  // ৪. ড্যাশবোর্ড বা মোবাইল হোম পেজ লোড হওয়া নিশ্চিত করা
+  // 4. Ensure the dashboard or mobile home page is loaded
   await expect(page).toHaveURL(/.*dashboard|home/, { timeout: 15000 });
 
 });
