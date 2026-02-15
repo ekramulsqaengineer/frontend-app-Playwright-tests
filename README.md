@@ -30,4 +30,4 @@ To view a detailed report after the tests are completed:
 npx playwright show-report
 
 
-Tips: If you are using Visual Studio Code (VS Code), install the Playwright Test for VSCode extension to make running and debugging tests much easier.
+Tips: If you are using Visual Studio Code (VS Code), install the Playwright Test for VSCode extension to make running and debugging tests much easier...........
