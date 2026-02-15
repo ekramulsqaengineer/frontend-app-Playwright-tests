@@ -3,7 +3,7 @@ import path from 'path';
 
 test('TC-03: File Upload Functional Test', async ({ page }) => {
   // লগইন ফ্লো
-  await page.goto('https://example.com/login');
+  await page.goto('http://localhost:5004/signin');
   await page.fill('#username', 'user_01');
   await page.fill('#password', 'pass_01');
   await page.click('#login-button');
