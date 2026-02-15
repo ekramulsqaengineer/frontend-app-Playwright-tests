@@ -9,8 +9,7 @@ node -v
 (যদি ভার্সন নম্বর দেখায়, তবে বুঝবেন ইনস্টলেশন সঠিক হয়েছে)।
 ধাপ ২: গিট (Git) থেকে প্রজেক্ট ক্লোন করা
 আপনার পছন্দের ফোল্ডারে গিয়ে টার্মিনাল ওপেন করুন এবং নিচের কমান্ডটি দিয়ে গিট রিপোজিটরি থেকে প্রজেক্টটি ডাউনলোড করুন:
-git clone [https://github.com/ekramulsqaengineer/frontend-app-Playwright-tests.git](https://github.com/ekramulsqaengineer/frontend-app-Playwright-tests.git)
-
+git clone [https://github.com/ekramulsqaengineer/frontend-app-Playwright-tests.git]
 
 ধাপ ৩: প্রজেক্ট ফোল্ডারে প্রবেশ এবং CMD ওপেন
 প্রজেক্টটি ক্লোন হওয়ার পর সেই ফোল্ডারের ভেতরে প্রবেশ করুন।
@@ -64,7 +63,7 @@ node -v
 (If a version number is displayed, the installation was successful).
 Step 2: Clone Project from Git
 Go to your preferred folder, open the terminal, and download the project from the Git repository using the following command:
-git clone [https://github.com/ekramulsqaengineer/frontend-app-Playwright-tests.git](https://github.com/ekramulsqaengineer/frontend-app-Playwright-tests.git)
+git clone [https://github.com/ekramulsqaengineer/frontend-app-Playwright-tests.git]
 
 
 Step 3: Navigate to Project Folder and Open CMD
